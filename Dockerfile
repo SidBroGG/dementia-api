@@ -1,5 +1,5 @@
 # Stage 1 building
-FROM golang:1.21-alpine AS builder
+FROM golang:alpine AS builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o todo-api ./cmd/main.go
+RUN CGO_ENABLED=0 go build -o todo-api ./cmd/api/main.go
 
 # Stage 2 running
 FROM alpine:latest
