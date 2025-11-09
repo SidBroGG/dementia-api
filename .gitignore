@@ -1,0 +1,65 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.env
+.venv/
+
+# === Docker ===
+# Игнорировать артефакты Docker
+*.log
+*.pid
+*.seed
+*.tar
+*.bak
+*.tmp
+*.swp
+
+# Игнорировать локальные volumes и контейнерные данные
+docker-data/
+data/
+tmp/
+
+# Не игнорировать Dockerfile и compose-файл
+!Dockerfile
+!docker-compose.yml
+
+# === Editor / OS ===
+# VSCode
+.vscode/
+.history/
+# PyCharm / IntelliJ
+.idea/
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+# Linux
+*~
+
+# === Test / Coverage ===
+.coverage
+htmlcov/
+.tox/
+pytest_cache/
+.cache/
+nosetests.xml
+coverage.xml
+
+# === Dependencies (если есть frontend) ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
