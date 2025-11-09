@@ -19,7 +19,7 @@ func main() {
 
 	// Http server
 	addr := fmt.Sprintf(":%s", cfg.Port)
-	log.Println("Server starting at localhost%s", addr)
+	log.Printf("Server starting at localhost%s", addr)
 
 	if err := http.ListenAndServe(addr, r); err != nil {
 		log.Fatal("Error starting server:", err)
