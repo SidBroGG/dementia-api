@@ -1,15 +1,34 @@
 services:
+  db:
+    image: postgres:alpine
+    container_name: todo_db
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=todolist_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
   app:
     build: 
       context: .
       dockerfile: Dockerfile
-
     container_name: todo_api_server
-
     restart: always
-
     ports:
       - "8080:8080"
-
     environment:
       - PORT=8080
+      - DB_HOST=db
+      - DB_NAME=todolist_db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
