@@ -12,7 +12,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
-  app:
+  migrations:
+    image: migrate@migrate:latest
+    container_name: todo_migrate
+    volumes:
+      - ./migrations:/migrations
+    command:
+      [
+        "-path", "/migrations",
+        "-database", "postgresql://user:password@db:5432/todolist_db?sslmode=disable",
+        "up"
+      ]
+    depends_on:
+      - db
+
+  api:
     build: 
       context: .
       dockerfile: Dockerfile
@@ -28,7 +42,7 @@ services:
       - DB_PASSWORD=password
       - DB_PORT=5432
     depends_on:
-      - db
+      - migrations
 
 volumes:
   postgres_data:
