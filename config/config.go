@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -15,8 +16,14 @@ type DB struct {
 	Port     string
 }
 
+type JWT struct {
+	JWTSecret string
+	TokenTTL  time.Duration
+}
+
 type Config struct {
 	DB
+	JWT
 
 	Port string
 }
@@ -29,11 +36,15 @@ func LoadConfig() *Config {
 	cfg := &Config{}
 
 	cfg.Port = getEnv("PORT", "8080")
+
 	cfg.DB.Host = getEnv("DB_HOST", "db")
 	cfg.DB.Name = getEnv("DB_NAME", "todolist_db")
 	cfg.DB.User = getEnv("DB_USER", "user")
 	cfg.DB.Password = getEnv("DB_PASSWORD", "password")
 	cfg.DB.Port = getEnv("DB_PORT", "5432")
+
+	cfg.JWT.JWTSecret = getEnv("JWT_SECRET", "secret")
+	cfg.JWT.TokenTTL = 24 * time.Hour
 
 	return cfg
 }
