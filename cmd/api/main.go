@@ -6,7 +6,10 @@ import (
 	"net/http"
 
 	"github.com/SidBroGG/dementia-api/config"
+	"github.com/SidBroGG/dementia-api/internal/auth"
+	"github.com/SidBroGG/dementia-api/internal/handlers"
 	"github.com/SidBroGG/dementia-api/internal/server"
+	"github.com/SidBroGG/dementia-api/internal/service"
 	"github.com/SidBroGG/dementia-api/internal/store"
 )
 
@@ -21,9 +24,20 @@ func main() {
 		log.Fatalf("Error connecting to db: %v", err)
 	}
 	defer db.Close()
+	userRepo := store.NewUserRepo(db)
+
+	// Auth (JWT)
+	jwtKey := []byte(cfg.JWTSecret)
+	auth := auth.NewJWTAuth(jwtKey, cfg.TokenTTL)
+
+	// Service
+	svc := service.NewService(userRepo, auth)
+
+	// Handlers handler
+	h := handlers.New(svc)
 
 	// Router
-	r := server.InitRouter()
+	r := server.InitRouter(h)
 
 	// Http server
 	addr := fmt.Sprintf(":%s", cfg.Port)

@@ -10,7 +10,9 @@ require (
 
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/lib/pq v1.10.9
+	golang.org/x/crypto v0.44.0
 )
 
 require (

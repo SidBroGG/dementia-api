@@ -9,21 +9,21 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func InitRouter() http.Handler {
+func InitRouter(h *handlers.Handler) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
 	r.Route("/api", func(r chi.Router) {
-		r.Post("/register", handlers.RegisterHandler)
-		r.Post("/login", handlers.LoginHandler)
+		r.Post("/register", h.RegisterHandler)
+		r.Post("/login", h.LoginHandler)
 
-		r.Post("/tasks", handlers.CreateTaskHandler)
-		r.Get("/tasks", handlers.GetTaskHandler)
-		r.Get("/tasks/{id}", handlers.GetTaskByIdHandler)
-		r.Put("/tasks/{id}", handlers.UpdateTaskHandler)
-		r.Delete("/tasks/{id}", handlers.DeleteTaskHandler)
+		r.Post("/tasks", h.CreateTaskHandler)
+		r.Get("/tasks", h.GetTaskHandler)
+		r.Get("/tasks/{id}", h.GetTaskByIdHandler)
+		r.Put("/tasks/{id}", h.UpdateTaskHandler)
+		r.Delete("/tasks/{id}", h.DeleteTaskHandler)
 	})
 
 	log.Println("Router is configured")

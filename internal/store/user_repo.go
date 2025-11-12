@@ -15,6 +15,11 @@ type UserRepo struct {
 	db *sqlx.DB
 }
 
+type Store interface {
+	Create(ctx context.Context, user *model.User) error
+	GetByEmail(ctx context.Context, email string) (*model.User, error)
+}
+
 func NewUserRepo(db *sqlx.DB) *UserRepo {
 	return &UserRepo{db: db}
 }
