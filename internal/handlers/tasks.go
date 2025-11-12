@@ -7,16 +7,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "Register handler ok")
-}
-
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "Login handler ok")
-}
-
 func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, "Task created")
