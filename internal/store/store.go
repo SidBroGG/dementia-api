@@ -1,6 +1,10 @@
 package store
 
-import "github.com/jmoiron/sqlx"
+import (
+	"errors"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type Store struct {
 	DB    *sqlx.DB
@@ -15,3 +19,5 @@ func NewStore(db *sqlx.DB) *Store {
 		Tasks: nil, // TODO
 	}
 }
+
+var ErrNotFound = errors.New("not found")

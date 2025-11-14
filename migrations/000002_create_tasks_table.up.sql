@@ -7,18 +7,18 @@ CREATE TABLE IF NOT EXISTS tasks (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
+-- CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
 
-CREATE OR REPLACE FUNCTION _update_timestamp()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = now();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql VOLATILE;
+-- CREATE OR REPLACE FUNCTION _update_timestamp()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--   NEW.updated_at = now();
+--   RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql VOLATILE;
 
-DROP TRIGGER IF EXISTS trg_tasks_update_timestamp ON tasks;
-CREATE TRIGGER trg_tasks_update_timestamp
-BEFORE UPDATE ON tasks
-FOR EACH ROW
-EXECUTE FUNCTION _update_timestamp();
+-- DROP TRIGGER IF EXISTS trg_tasks_update_timestamp ON tasks;
+-- CREATE TRIGGER trg_tasks_update_timestamp
+-- BEFORE UPDATE ON tasks
+-- FOR EACH ROW
+-- EXECUTE FUNCTION _update_timestamp();

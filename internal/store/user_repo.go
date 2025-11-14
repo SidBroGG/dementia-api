@@ -3,13 +3,10 @@ package store
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/SidBroGG/dementia-api/internal/model"
 	"github.com/jmoiron/sqlx"
 )
-
-var ErrNotFound = errors.New("not found")
 
 type userDB struct {
 	db *sqlx.DB

@@ -24,5 +24,5 @@ type Task struct {
 	Title       string    `json:"title" db:"title"`
 	Description string    `json:"description" db:"description"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-	UploadedAt  time.Time `json:"uploaded_at" db:"uploaded_at"`
+	UpdatedAt   time.Time `json:"uploaded_at" db:"uploaded_at"`
 }
