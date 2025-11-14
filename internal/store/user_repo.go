@@ -11,25 +11,20 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
-type UserRepo struct {
+type userDB struct {
 	db *sqlx.DB
 }
 
-type Store interface {
-	Create(ctx context.Context, user *model.User) error
-	GetByEmail(ctx context.Context, email string) (*model.User, error)
+func NewUserDB(db *sqlx.DB) *userDB {
+	return &userDB{db: db}
 }
 
-func NewUserRepo(db *sqlx.DB) *UserRepo {
-	return &UserRepo{db: db}
-}
-
-func (r *UserRepo) Create(ctx context.Context, user *model.User) error {
+func (r *userDB) Create(ctx context.Context, user *model.User) error {
 	q := `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, created_at`
 	return r.db.QueryRowxContext(ctx, q, user.Email, user.PasswordHash).Scan(&user.ID, &user.CreatedAt)
 }
 
-func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+func (r *userDB) GetByEmail(ctx context.Context, email string) (*model.User, error) {
 	q := `SELECT id, email, password_hash, created_at FROM users WHERE email = $1`
 	u := &model.User{}
 	if err := r.db.GetContext(ctx, u, q, email); err != nil {

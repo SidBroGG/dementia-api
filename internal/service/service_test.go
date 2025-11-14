@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"context"
@@ -6,79 +6,88 @@ import (
 	"time"
 
 	"github.com/SidBroGG/dementia-api/internal/model"
+	"github.com/SidBroGG/dementia-api/internal/service"
+	"github.com/SidBroGG/dementia-api/internal/store"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type mockStore struct {
-	mock.Mock
-	lastCreated *model.User
+// mocks
+
+type mockUserStore struct {
+	CreateFn     func(ctx context.Context, u *model.User) error
+	GetByEmailFn func(ctx context.Context, email string) (*model.User, error)
 }
 
-func (m *mockStore) Create(ctx context.Context, u *model.User) error {
-	args := m.Called(ctx, u)
-
-	m.lastCreated = u
-	return args.Error(0)
+func (m *mockUserStore) Create(ctx context.Context, u *model.User) error {
+	return m.CreateFn(ctx, u)
 }
 
-func (m *mockStore) GetByEmail(ctx context.Context, email string) (*model.User, error) {
-	args := m.Called(ctx, email)
-	u := args.Get(0)
-	if u == nil {
-		return nil, args.Error(1)
-	}
-
-	return u.(*model.User), args.Error(1)
+func (m *mockUserStore) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+	return m.GetByEmailFn(ctx, email)
 }
 
 type mockAuth struct {
-	mock.Mock
+	IssueTokenFn func(ctx context.Context, id int64) (string, time.Time, error)
 }
 
-func (m *mockAuth) IssueToken(ctx context.Context, userID int64) (string, time.Time, error) {
-	args := m.Called(ctx, userID)
-	token := ""
-
-	if args.Get(0) != nil {
-		token = args.String(0)
-	}
-
-	var t time.Time
-	if args.Get(1) != nil {
-		if tt, ok := args.Get(1).(time.Time); ok {
-			t = tt
-		}
-	}
-
-	return token, t, args.Error(2)
+func (m *mockAuth) IssueToken(ctx context.Context, id int64) (string, time.Time, error) {
+	return m.IssueTokenFn(ctx, id)
 }
 
-func TestRegisterSuccess(t *testing.T) {
-	ctx := context.Background()
-	ms := new(mockStore)
-	ma := new(mockAuth)
+// tests
 
-	svc := NewService(ms, ma)
-
-	req := model.AuthRequest{
-		Email:    "   SKIBIDI.TOilet@qwe.com ",
-		Password: "passssss123@#ord",
+func TestRegister_Success(t *testing.T) {
+	users := &mockUserStore{
+		CreateFn: func(ctx context.Context, u *model.User) error {
+			assert.NotEmpty(t, u.PasswordHash)
+			assert.Equal(t, "test@test.com", u.Email)
+			return nil
+		},
 	}
 
-	ms.On("Create", mock.Anything, mock.AnythingOfType("*model.User")).Return(nil)
+	s := service.NewService(store.Store{
+		Users: users,
+		Tasks: nil,
+	}, nil)
 
-	err := svc.Register(ctx, req)
+	err := s.Register(context.Background(), model.AuthRequest{
+		Email:    "	TeST@Test.com  ",
+		Password: "testpassword",
+	})
+
 	assert.NoError(t, err)
+}
 
-	created := ms.lastCreated
-	if assert.NotNil(t, created) {
-		assert.Equal(t, "skibidi.toilet@qwe.com", created.Email)
+func TestLogin_Success(t *testing.T) {
+	hashed, _ := bcrypt.GenerateFromPassword([]byte("testpassword"), bcrypt.DefaultCost)
 
-		err = bcrypt.CompareHashAndPassword([]byte(created.PasswordHash), []byte(req.Password))
-		assert.NoError(t, err)
+	users := &mockUserStore{
+		GetByEmailFn: func(ctx context.Context, email string) (*model.User, error) {
+			return &model.User{
+				ID:           1,
+				Email:        "test@mail.com",
+				PasswordHash: string(hashed),
+			}, nil
+		},
 	}
 
-	ms.AssertExpectations(t)
+	auth := &mockAuth{
+		IssueTokenFn: func(ctx context.Context, id int64) (string, time.Time, error) {
+			return "token123", time.Time{}, nil
+		},
+	}
+
+	s := service.NewService(store.Store{
+		Users: users,
+	}, auth)
+
+	resp, err := s.Login(context.Background(), model.AuthRequest{
+		Email:    "test@mail.com",
+		Password: "testpassword",
+	})
+
+	require.NoError(t, err)
+	assert.Equal(t, "token123", resp.Token)
 }

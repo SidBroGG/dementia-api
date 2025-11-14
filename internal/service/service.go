@@ -34,7 +34,7 @@ func (s *Service) Register(ctx context.Context, req model.AuthRequest) error {
 		PasswordHash: string(hashed),
 	}
 
-	if err := s.store.Create(ctx, user); err != nil {
+	if err := s.store.Users.Create(ctx, user); err != nil {
 		return err
 	}
 
@@ -43,7 +43,7 @@ func (s *Service) Register(ctx context.Context, req model.AuthRequest) error {
 
 func (s *Service) Login(ctx context.Context, req model.AuthRequest) (*model.LoginResponse, error) {
 	email := strings.ToLower(strings.TrimSpace(req.Email))
-	user, err := s.store.GetByEmail(ctx, email)
+	user, err := s.store.Users.GetByEmail(ctx, email)
 	if err != nil {
 		return nil, ErrInvalidCreds
 	}

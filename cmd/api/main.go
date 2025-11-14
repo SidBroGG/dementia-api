@@ -24,14 +24,14 @@ func main() {
 		log.Fatalf("Error connecting to db: %v", err)
 	}
 	defer db.Close()
-	userRepo := store.NewUserRepo(db)
+	storeRepo := store.NewStore(db)
 
 	// Auth (JWT)
 	jwtKey := []byte(cfg.JWTSecret)
 	auth := auth.NewJWTAuth(jwtKey, cfg.TokenTTL)
 
 	// Service
-	svc := service.NewService(userRepo, auth)
+	svc := service.NewService(*storeRepo, auth)
 
 	// Handlers handler
 	h := handlers.New(svc)
