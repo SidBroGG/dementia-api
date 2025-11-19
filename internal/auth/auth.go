@@ -24,8 +24,8 @@ func (a *JWTAuth) IssueToken(ctx context.Context, userId int64) (string, time.Ti
 	expires := time.Now().Add(a.ttl)
 	claims := jwt.MapClaims{
 		"sub": userId,
-		"exp": expires.Unix(),
-		"iat": time.Now().Unix(),
+		"exp": jwt.NewNumericDate(expires),
+		"iat": jwt.NewNumericDate(time.Now()),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
