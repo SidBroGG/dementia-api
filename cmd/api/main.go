@@ -30,8 +30,8 @@ func main() {
 	jwtKey := []byte(cfg.JWTSecret)
 	auth := auth.NewJWTAuth(jwtKey, cfg.TokenTTL)
 
-	// Service
-	svc := service.NewService(*storeRepo, auth)
+	// Auth Service
+	svc := service.NewAuthService(storeRepo.Users, auth)
 
 	// Handlers handler
 	h := handlers.New(svc)

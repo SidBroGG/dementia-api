@@ -7,7 +7,6 @@ import (
 
 	"github.com/SidBroGG/dementia-api/internal/model"
 	"github.com/SidBroGG/dementia-api/internal/service"
-	"github.com/SidBroGG/dementia-api/internal/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
@@ -47,10 +46,7 @@ func TestRegister_Success(t *testing.T) {
 		},
 	}
 
-	s := service.NewService(store.Store{
-		Users: users,
-		Tasks: nil,
-	}, nil)
+	s := service.NewAuthService(users, nil)
 
 	err := s.Register(context.Background(), model.AuthRequest{
 		Email:    "	TeST@Test.com  ",
@@ -79,9 +75,7 @@ func TestLogin_Success(t *testing.T) {
 		},
 	}
 
-	s := service.NewService(store.Store{
-		Users: users,
-	}, auth)
+	s := service.NewAuthService(users, auth)
 
 	resp, err := s.Login(context.Background(), model.AuthRequest{
 		Email:    "test@mail.com",

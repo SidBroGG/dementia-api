@@ -14,16 +14,16 @@ import (
 
 var ErrInvalidCreds = errors.New("invalid credentials")
 
-type Service struct {
-	store store.Store
+type AuthService struct {
+	users store.UserRepo
 	auth  auth.Auth
 }
 
-func NewService(store store.Store, auth auth.Auth) *Service {
-	return &Service{store: store, auth: auth}
+func NewAuthService(users store.UserRepo, auth auth.Auth) *AuthService {
+	return &AuthService{users: users, auth: auth}
 }
 
-func (s *Service) Register(ctx context.Context, req model.AuthRequest) error {
+func (s *AuthService) Register(ctx context.Context, req model.AuthRequest) error {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return fmt.Errorf("hash password: %w", err)
@@ -34,16 +34,16 @@ func (s *Service) Register(ctx context.Context, req model.AuthRequest) error {
 		PasswordHash: string(hashed),
 	}
 
-	if err := s.store.Users.Create(ctx, user); err != nil {
+	if err := s.users.Create(ctx, user); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *Service) Login(ctx context.Context, req model.AuthRequest) (*model.LoginResponse, error) {
+func (s *AuthService) Login(ctx context.Context, req model.AuthRequest) (*model.LoginResponse, error) {
 	email := strings.ToLower(strings.TrimSpace(req.Email))
-	user, err := s.store.Users.GetByEmail(ctx, email)
+	user, err := s.users.GetByEmail(ctx, email)
 	if err != nil {
 		return nil, ErrInvalidCreds
 	}

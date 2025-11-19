@@ -17,10 +17,10 @@ func init() {
 }
 
 type Handler struct {
-	svc *service.Service
+	svc *service.AuthService
 }
 
-func New(svc *service.Service) *Handler {
+func New(svc *service.AuthService) *Handler {
 	return &Handler{svc: svc}
 }
 
