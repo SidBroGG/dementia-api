@@ -16,12 +16,12 @@ func init() {
 	validate = validator.New()
 }
 
-type Handler struct {
+type AuthHandler struct {
 	svc *service.AuthService
 }
 
-func New(svc *service.AuthService) *Handler {
-	return &Handler{svc: svc}
+func NewAuthHandler(svc *service.AuthService) *AuthHandler {
+	return &AuthHandler{svc: svc}
 }
 
 func parseAuthRequest(r *http.Request) (*model.AuthRequest, error) {
@@ -41,7 +41,7 @@ func parseAuthRequest(r *http.Request) (*model.AuthRequest, error) {
 	return data, nil
 }
 
-func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	data, err := parseAuthRequest(r)
@@ -64,7 +64,7 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Successfully registered")
 }
 
-func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	data, err := parseAuthRequest(r)
