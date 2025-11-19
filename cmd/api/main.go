@@ -33,11 +33,12 @@ func main() {
 	// Auth Service
 	svc := service.NewAuthService(storeRepo.Users, auth)
 
-	// Handlers handler
-	h := handlers.New(svc)
+	// Handlers
+	authH := handlers.NewAuthHandler(svc)
+	taskH := handlers.NewTaskHandler(svc)
 
 	// Router
-	r := server.InitRouter(h)
+	r := server.InitRouter(authH, taskH)
 
 	// Http server
 	addr := fmt.Sprintf(":%s", cfg.Port)
